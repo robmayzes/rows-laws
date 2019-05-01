@@ -1,46 +1,93 @@
 import random
 import time
+import sys
 
 # Import laws from txt file
 
-all_laws = open("Laws.txt")
-str_laws = all_laws.read()
-laws = str_laws.split('\n')
-print(laws)
-all_laws.close()
+with open("Laws.txt") as all_laws:
+    str_laws = all_laws.read()
+    laws = str_laws.split('\n')
+total_laws = len(laws)
 
-# Update parameters here
+# Get user prefs
 
-days = 5
-total_laws = 47
-sleep_time = 5
+def days_input():
+    days = input("How many day's would you like to split the laws over?\n")
+    try:
+        integer = int(days)
+        return integer
+    except ValueError:
+        print("\nPlease enter an integer. Let's try again...\n")
+        return
 
-# laws = [Law1, Law2, Law3, Law4, Law5, Law6, Law7, Law8, Law9, Law10, Law11, Law12, Law13, Law14, Law15, Law16, Law17, Law18, Law19, Law20, Law21, Law22, Law23, Law24, Law25, Law26, Law27, Law28, Law29, Law30, Law31, Law32, Law33, Law34, Law35, Law36, Law37, Law38, Law38, Law40, Law41, Law42, Law43, Law44, Law45, Law46, Law47]
+def sleep_input():
+    days = input("How long (in seconds) do you want to pause between each law?\n")
+    try:
+        integer = int(days)
+        return integer
+    except ValueError:
+        print("\nPlease enter an integer. Let's try again...\n")
+        return
 
-# Leave the rest as is
+# Show random laws function
 
-laws_per_day = total_laws/days
-int_laws_per_day = int(laws_per_day)
-
-for day in range(days-1):
-    print("\nMorning Rob! Ready for your daily principles?")
-
-    for today in range(int_laws_per_day):
+def show_laws(days, sleep_time, int_laws_per_day):
+    for day in range(days-1):
+        print("\nOkay! Ready for your daily principles?")
+        for today in range(int_laws_per_day):
+            input("\n>>> Press enter to see the next law...\n")
+            current_law = random.choice(laws)
+            print(current_law)
+            laws.remove(current_law)
+            time.sleep(sleep_time)
+        print("\nThat's it for today! Come back here tomorrow for the next round. "
+                     "Or, would you prefer to quit? (y/n)\n")
+        play_again()
+    while len(laws) != 0:
         input("\n>>> Press enter to see the next law...\n")
         current_law = random.choice(laws)
         print(current_law)
         laws.remove(current_law)
         time.sleep(sleep_time)
+    print("\nThat's all of the laws. See you next time!\n")
 
-    print("\nThat's it for today! Come back tomorrow, Rob.\n\n---------------------------------\n")
-    time.sleep(600)
+# User input functions
 
-while len(laws) != 0:
-	input("\n>>> Press enter to see the next law...\n")
-	current_law = random.choice(laws)
-	print(current_law)
-	laws.remove(current_law)
-	time.sleep(sleep_time)
+def sleep_f(days):
+    sleep_time = sleep_input()
+    if isinstance(sleep_time, int):
+        laws_per_day = total_laws/days
+        int_laws_per_day = int(laws_per_day)
+        show_laws(days, sleep_time, int_laws_per_day)
+    else: 
+        sleep_f(days)
 
+def days_f():
+    days = days_input()
+    if isinstance(days, int):
+        sleep_f(days)
+    else:
+        days_f()
 
-print("\nThat's all of the laws. See you next week, Rob!\n")
+def play_again():
+    play = input("")
+    if play == "n":
+        print("\nCool, see you tomorrow! \n\n---------------------------------\n")
+        time.sleep(1) 
+        # TODO: Change back to 600
+        return
+    elif play == "y":
+        print("\nNo problem. See you later!")
+        sys.exit()
+    else:
+        print("\n(Please enter y or n.)")
+        play_again()
+
+# Run program
+
+def run():
+    print('Welcome to Robs Laws. Total Laws = ' + str(total_laws))
+    time.sleep(1)
+    days_f()
+
+run()
